@@ -2,10 +2,8 @@ rm(list=ls())
 library(tidyverse)
 source('scripts/helpers/drop_suffix.r')
 
-# Import data and keep only relevant columns
+# Import data 
 d <- read.csv('data/behavioral_data/MW_EEG_behavioral.csv')
-d <-  d[complete.cases(d), c('subject', 'run', grep('*_response$', colnames(d)[3:(length(colnames(d)))], value=TRUE))]
-colnames(d) <- c('subject', 'run', drop_suffix(d[,3:(ncol(d))]))
 
 
 # Visualize not collapsed across subjects
@@ -49,3 +47,20 @@ d %>%
         strip.background = element_rect(fill=NA))
 
 ggsave('scripts/descriptives/probe_descriptives.png', height=800, width=800, units='px', dpi=120)
+
+# Observation counts by subject
+d %>% 
+  group_by(subject) %>% 
+  summarize(count = n()) %>% 
+  ggplot(aes(x = count)) +
+  geom_histogram(color='black', fill='steelblue') + 
+  labs(
+    x = 'Number of observations',
+    y = 'Frequency',
+    title = 'Histogram of observations per subject'
+  ) + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(),
+        axis.ticks = element_blank(),
+        text = element_text(size = 16))
+ggsave('figures/observations_per_subject.png', height=800, width=800, units='px', dpi=96)

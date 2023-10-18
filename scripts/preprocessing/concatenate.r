@@ -1,3 +1,4 @@
+rm(list=ls())
 library(tidyverse)
 
 csvs <- list.files('data/behavioral_data/csv')
@@ -13,7 +14,6 @@ repair_missing <- function(d, data) {
 }
 
 for (file in csvs) {
-  count <- count + 1
   params <- unlist(strsplit(file, '_'))
   subject <- params[3]
   run <- params[4]
@@ -32,7 +32,7 @@ for (file in csvs) {
 # Move subject and run to first columns
 d <- cbind(d[,c('subject', 'run')], d[, 1:(ncol(d)-2)])
 # Save data
-write.csv(d, 'data/behavioral_data/MW_EEG_behavioral.csv', row.names=FALSE)
+write.csv(d, 'data/behavioral_data/MW_EEG_behavioral_full.csv', row.names=FALSE)
 
 # Summarize missing data
 missing <- apply(d, MARGIN=2, FUN=function(x) sum(is.na(x)))

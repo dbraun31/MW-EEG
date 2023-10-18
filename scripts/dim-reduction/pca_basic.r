@@ -4,23 +4,40 @@ library(scales)
 source('scripts/helpers/drop_suffix.r')
 
 d <- read.csv('data/behavioral_data/MW_EEG_behavioral.csv')
-og_rows <- nrow(d)
-d <- d[complete.cases(d),  grep('*_response$', colnames(d), value=TRUE)]
-colnames(d) <- drop_suffix(d)
-percent_missing <- round((og_rows - nrow(d))/og_rows, 4) * 100
-print(paste0(percent_missing, '% of the data was dropped due to missing observations on one or more variables'))
-
 # Use dimensions used in past literature
 mask <- c('past', 'fut', 'self', 'ppl', 'aff')
 
 # Run PCA
-pca <- prcomp(d[,mask], scale=TRUE)
+# Scale subject-wise
+subject_scale <- FALSE
+
+if (subject_scale) {
+  d <- d %>% 
+    mutate(id = 1:(nrow(d))) %>% 
+    gather(probe, response, att:conf) %>% 
+    group_by(subject) %>% 
+    mutate(response_m = mean(response), response_sd = sd(response)) %>% 
+    ungroup() %>% 
+    mutate(response_sc = (response - response_m) / response_sd) %>% 
+    select(-response, -response_m, -response_sd) %>% 
+    rename(response = response_sc) %>% 
+    spread(probe, response) %>% 
+    select(-run, -id) 
+  pca <- prcomp(d[,mask])
+  cov_matrix(cov(d[,mask]))
+} else {
+  pca <- prcomp(d[,mask], scale. = TRUE)
+  cov_matrix <- cov(scale(d[,mask]))
+}
+
+
+
+result <- data.frame(factor = 1:(ncol(pca$rotation)), eigenvalue = eigen(cov_matrix)$values)
 
 # Summarize results
 
 # Scree
 importance <- summary(pca)$importance
-result <- data.frame(factor = 1:(ncol(pca$rotation)), eigenvalue = pca$sdev^2)
 result %>% 
   ggplot(aes(x = factor, y = eigenvalue, group = 1)) + 
   geom_hline(yintercept=1, linetype='dotted') +
@@ -45,8 +62,8 @@ blue <- brewer_pal(type='div')(9)[8]
 pca$rotation %>% 
   as.data.frame(.) %>% 
   mutate(item = rownames(.)) %>% 
-  select(item, PC1:PC3) %>% 
-  gather(factor, loading, PC1:PC3) %>% 
+  #select(item, PC1:PC3) %>% 
+  gather(factor, loading, PC1:PC5) %>% 
   ggplot(aes(x = factor, y = item, fill = loading)) + 
   geom_tile() + 
   geom_text(aes(label=round(loading, 3)), size = 7) +
