@@ -1,0 +1,153 @@
+Many papers report using "PCA with varimax rotation", but I don't actually
+think that makes much sense.
+
+=========================================
+
+From:
+https://stats.stackexchange.com/questions/612/is-pca-followed-by-a-rotation-such-as-varimax-still-pca
+
+=========================================
+
+This question is largely about definitions of PCA/FA, so opinions might
+differ. My opinion is that PCA+varimax should not be called either PCA or
+FA, bur rather explicitly referred to e.g. as "varimax-rotated PCA".
+
+I should add that this is quite a confusing topic. In this answer I want to
+explain what a rotation actually is; this will require some mathematics. A
+casual reader can skip directly to the illustration. Only then we can
+discuss whether PCA+rotation should or should not be called "PCA".
+
+One reference is Jolliffe's book "Principal Component Analysis", section
+11.1 "Rotation of Principal Components", but I find it could be clearer.
+
+Let X
+be a n×p data matrix which we assume is centered. PCA amounts (see my
+answer here) to a singular-value decomposition: X=USV⊤
+
+. There are two equivalent but complimentary views on this decomposition: a
+more PCA-style "projection" view and a more FA-style "latent variables"
+view.
+
+According to the PCA-style view, we found a bunch of orthogonal directions
+V
+(these are eigenvectors of the covariance matrix, also called "principal
+directions" or "axes"), and "principal components" US (also called
+principal component "scores") are projections of the data on these
+directions. Principal components are uncorrelated, the first one has
+maximally possible variance, etc. We can write:
+X=US⋅V⊤=Scores⋅Principal directions.
+
+According to the FA-style view, we found some uncorrelated unit-variance
+"latent factors" that give rise to the observed variables via "loadings".
+Indeed, U˜=n−1−−−−−√U
+are standardized principal components (uncorrelated and with unit
+variance), and if we define loadings as L=VS/n−1−−−−−√, then
+X=n−1−−−−−√U⋅(VS/n−1−−−−−√)⊤=U˜⋅L⊤=Standardized scores⋅Loadings.
+(Note that S⊤=S.) Both views are equivalent. Note that loadings are
+eigenvectors scaled by the respective eigenvalues (S/n−1−−−−−√
+
+are eigenvalues of the covariance matrix).
+
+(I should add in brackets that PCA≠
+
+FA; FA explicitly aims at finding latent factors that are linearly mapped
+to the observed variables via loadings; it is more flexible than PCA and
+yields different loadings. That is why I prefer to call the above "FA-style
+view on PCA" and not FA, even though some people take it to be one of FA
+methods.)
+
+Now, what does a rotation do? E.g. an orthogonal rotation, such as varimax.
+First, it considers only k<p
+components, i.e.:
+X≈UkSkV⊤k=U˜kL⊤k.
+Then it takes a square orthogonal k×k matrix T, and plugs TT⊤=I into this
+decomposition:
+X≈UkSkV⊤k=UkTT⊤SkV⊤k=U˜rotL⊤rot,
+where rotated loadings are given by Lrot=LkT, and rotated standardized
+scores are given by U˜rot=U˜kT. (The purpose of this is to find T such that
+Lrot
+
+became as close to being sparse as possible, to facilitate its
+interpretation.)
+
+Note that what is rotated are: (1) standardized scores, (2) loadings. But
+not the raw scores and not the principal directions! So the rotation
+happens in the latent space, not in the original space. This is absolutely
+crucial.
+
+From the FA-style point of view, nothing much happened. (A) The latent
+factors are still uncorrelated and standardized. (B) They are still mapped
+to the observed variables via (rotated) loadings. (C) The amount of
+variance captured by each component/factor is given by the sum of squared
+values of the corresponding loadings column in Lrot
+. (D) Geometrically, loadings still span the same k-dimensional subspace in
+Rp (the subspace spanned by the first k PCA eigenvectors). (E) The
+approximation to X and the reconstruction error did not change at all. (F)
+The covariance matrix is still approximated equally well:
+Σ≈LkL⊤k=LrotL⊤rot.
+
+But the PCA-style point of view has practically collapsed. Rotated loadings
+do not correspond to orthogonal directions/axes in Rp
+    anymore, i.e. columns of Lrot are not orthogonal! Worse, if you
+    [orthogonally] project the data onto the directions given by the
+    rotated loadings, you will get correlated (!) projections and will not
+    be able to recover the scores. [Instead, to compute the standardized
+    scores after rotation, one needs to multiply the data matrix with the
+    pseudo-inverse of loadings U˜rot=X(L+rot)⊤. Alternatively, one can
+    simply rotate the original standardized scores with the rotation
+    matrix: U˜rot=U˜T.] Also, the rotated components do not successively
+    capture the maximal amount of variance: the variance gets redistributed
+    among the components (even though all k rotated components capture
+    exactly as much variance as all k
+
+    original principal components).
+
+    Here is an illustration. The data is a 2D ellipse stretched along the
+    main diagonal. First principal direction is the main diagonal, the
+    second one is orthogonal to it. PCA loading vectors (eigenvectors
+    scaled by the eigenvalues) are shown in red -- pointing in both
+    directions and also stretched by a constant factor for visibility. Then
+    I applied an orthogonal rotation by 30∘
+
+    to the loadings. Resulting loading vectors are shown in magenta. Note
+    how they are not orthogonal (!).
+
+    PCA rotation
+
+    An FA-style intuition here is as follows: imagine a "latent space"
+    where points fill a small circle (come from a 2D Gaussian with unit
+    variances). These distribution of points is then stretched along the
+    PCA loadings (red) to become the data ellipse that we see on this
+    figure. However, the same distribution of points can be rotated and
+    then stretched along the rotated PCA loadings (magenta) to become the
+    same data ellipse.
+
+    [To actually see that an orthogonal rotation of loadings is a rotation,
+    one needs to look at a PCA biplot; there the vectors/rays corresponding
+    to original variables will simply rotate.]
+
+    Let us summarize. After an orthogonal rotation (such as varimax), the
+    "rotated-principal" axes are not orthogonal, and orthogonal projections
+    on them do not make sense. So one should rather drop this whole
+    axes/projections point of view. It would be weird to still call it PCA
+    (which is all about projections with maximal variance etc.).
+
+    From FA-style point of view, we simply rotated our (standardized and
+    uncorrelated) latent factors, which is a valid operation. There are no
+    "projections" in FA; instead, latent factors generate the observed
+    variables via loadings. This logic is still preserved. However, we
+    started with principal components, which are not actually factors (as
+    PCA is not the same as FA). So it would be weird to call it FA as well.
+
+    Instead of debating whether one "should" rather call it PCA or FA, I
+    would suggest to be meticulous in specifying the exact used procedure:
+    "PCA followed by a varimax rotation".
+
+    Postscriptum. It is possible to consider an alternative rotation
+    procedure, where TT⊤
+    is inserted between US and V⊤. This would rotate raw scores and
+    eigenvectors (instead of standardized scores and loadings). The biggest
+    problem with this approach is that after such a "rotation", scores will
+    not be uncorrelated anymore, which is pretty fatal for PCA. One can do
+    it, but it is not how rotations are usually being understood and
+    applied.

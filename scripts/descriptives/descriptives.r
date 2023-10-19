@@ -46,7 +46,7 @@ d %>%
         axis.ticks = element_blank(),
         strip.background = element_rect(fill=NA))
 
-ggsave('scripts/descriptives/probe_descriptives.png', height=800, width=800, units='px', dpi=120)
+ggsave('figures/probe_descriptives.png', height=800, width=800, units='px', dpi=120)
 
 # Observation counts by subject
 d %>% 
