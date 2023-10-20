@@ -6,9 +6,12 @@ custom_scale <- function(response, response_m, response_sd) {
 }
 
 normalize_subject_item <- function(d) {
+  # Normalize within subject and item
+  gather_cols <- colnames(d)
+  gather_cols <- gather_cols[!gather_cols %in% c('subject', 'item', 'conf')]
   d <- d %>% 
     mutate(id = 1:(nrow(d))) %>% 
-    gather(item, response, att:conf) %>% 
+    gather(item, response, gather_cols[1]:gather_cols[length(gather_cols)]) %>% 
     group_by(subject, item) %>% 
     mutate(response_m = mean(response), response_sd = sd(response)) %>% 
     ungroup() %>% 
@@ -16,6 +19,6 @@ normalize_subject_item <- function(d) {
     select(-response, -response_m, -response_sd) %>% 
     rename(response = response_sc) %>% 
     spread(item, response) %>% 
-    select(-run, -id) 
+    select(-id) 
   return(d)
 }
