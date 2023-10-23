@@ -1,0 +1,13 @@
+item_names_dict <- c('att' = 'Mental',
+                     'past' = 'Past',
+                     'fut' = 'Future',
+                     'self' = 'Self',
+                     'ppl' = 'Others',
+                     'arou' = 'Energized',
+                     'aff' = 'Positive',
+                     'eng' = 'Disengage',
+                     'mvmt' = 'Moving',
+                     'delib' = 'Deliberate',
+                     'image' = 'Visual',
+                     'ling' = 'Verbal',
+                     'conf' = 'Confidence')
