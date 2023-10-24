@@ -1,7 +1,7 @@
 rm(list=ls())
 library(tidyverse)
 library(scales)
-source('scripts/helpers/drop_suffix.r')
+source('scripts/helpers/computers.r')
 
 d <- read.csv('data/behavioral_data/MW_EEG_behavioral.csv')
 # Use dimensions used in past literature

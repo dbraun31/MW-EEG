@@ -2,20 +2,15 @@ library(abind)
 library(scales)
 library(tidyverse)
 rm(list=ls())
-source('scripts/helpers/drop_suffix.r')
+source('scripts/helpers/computers.r')
 d <- read.csv('data/behavioral_data/MW_EEG_behavioral.csv')
  
 # We want to compute correlations and *then* average over subjects 
 # Gives us a better sense of trial effects rather than individual differences
 
-# Keep only relevant columns
-d <- d[complete.cases(d), c('subject', 'run', grep('*_response$', colnames(d), value=TRUE))]
-colnames(d)[3:(ncol(d))] <- drop_suffix(d[,3:(ncol(d))])
-
 # Loop over subjects
 cors <- list()
 for (s in unique(d$subject)) {
-  print(s)
   d_mat <- d[d$subject==s, 3:(ncol(d))]
   cors[[s]] <- cor(d_mat)
 }
@@ -54,4 +49,4 @@ mean_cors %>%
         legend.position='none',
         plot.caption = element_text(size = 12))
 
-ggsave('figures/correlation_matrix.png', height=800, width=800, units='px', dpi=96)
+ggsave('figures/ppt/correlation_matrix.png', height=720, width=1280, units='px', dpi=120)

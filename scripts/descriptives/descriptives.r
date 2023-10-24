@@ -1,6 +1,6 @@
 rm(list=ls())
 library(tidyverse)
-source('scripts/helpers/drop_suffix.r')
+source('scripts/helpers/computers.r')
 
 # Import data 
 d <- read.csv('data/behavioral_data/MW_EEG_behavioral.csv')
@@ -46,7 +46,7 @@ d %>%
         axis.ticks = element_blank(),
         strip.background = element_rect(fill=NA))
 
-ggsave('figures/probe_descriptives.png', height=800, width=800, units='px', dpi=120)
+ggsave('figures/ppt/item_descriptives.png', height=720, width=1280, units='px', dpi=120)
 
 # Observation counts by subject
 d %>% 
@@ -63,4 +63,4 @@ d %>%
   theme(panel.grid = element_blank(),
         axis.ticks = element_blank(),
         text = element_text(size = 16))
-ggsave('figures/observations_per_subject.png', height=800, width=800, units='px', dpi=96)
+ggsave('figures/ppt/observations_per_subject.png', height=720, width=1280, units='px', dpi=120)

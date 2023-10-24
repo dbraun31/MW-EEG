@@ -1,6 +1,6 @@
 library(scales)
 library(ggwordcloud)
-source('scripts/helpers/item_names_dict.r')
+source('scripts/helpers/objects.r')
 
 ### HEAT MAP OF ROTATION MATRIX ###
 
@@ -71,7 +71,7 @@ plot_rotation_subject <- function(subject_pcas, subject_idxs) {
 
 # https://cran.r-project.org/web/packages/ggwordcloud/vignettes/ggwordcloud.html
 
-plot_word_cloud <- function(subject_pcas, subject_idxs) {
+plot_word_cloud <- function(subject_pcas, subject_idxs, max_size = 30) {
 
   d <- rotations_to_df(subject_pcas, subject_idxs)
   eigen_df <- eigens_to_df(subject_pcas, subject_idxs)
@@ -79,9 +79,10 @@ plot_word_cloud <- function(subject_pcas, subject_idxs) {
   d %>% 
     gather(PC, loading, PC1:(ncol(d))) %>% 
     inner_join(eigen_df) %>% 
+    mutate(subject = factor(subject, levels = subject_idxs)) %>% 
     ggplot(aes(label=item, size = abs(loading), color = loading)) +
     geom_text_wordcloud(area_corr = TRUE) +
-    scale_size_area(max_size = 30) +
+    scale_size_area(max_size = max_size) +
     scale_color_gradientn(colors = rev(brewer_pal(type='div')(9))) + 
     facet_grid(subject~PC) + 
     theme_bw() + 
