@@ -2,3 +2,5 @@ data/
 priv/
 .Rproj.user
 liteature/
+push.sh
+pull.sh
