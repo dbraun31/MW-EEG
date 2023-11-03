@@ -1,0 +1,31 @@
+.
+├── meta_info.txt
+    information about number of subjects and trimming
+├── arousal_distribution_eeg.png
+    Histogram of mean arousal rating across subjects for pure EEG data
+├── arousal_distribution_fmri-eeg.png
+    Histogram of mean arousal rating across subjects for EEG-fmri data
+├── confidence_distribution_eeg.png
+    Histogram of raw confidence ratings on each trial for pure EEG data
+├── run_correlation_eeg.png
+    Run-level correlations across subjects for pure EEG data
+├── run_correlation_fmri-eeg.png
+    Run-level correlations across subjects for EEG-fmri data
+├── run_correlation_histogram_eeg.png
+    Histogram of subject-level correlations within run for pure EEG data
+├── run_correlation_histogram_fmri-eeg.png
+    Histogram of subject-level correlations within run for EEG-fmri data
+├── session_correlation_eeg.png
+    Session-level correlations across subjects for pure EEG data
+├── session_correlation_fmri-eeg.png
+    Session-level correlations across subjects for EEG-fmri data
+├── session_correlation_histogram_eeg.png
+    Histogram of subject-level correlations within session for pure EEG data
+├── session_correlation_histogram_fmri-eeg.png
+    Histogram of subject-level correlations within session for EEG-fmri data
+├── subject_summary_eeg.csv
+    Subject-level summary table for pure EEG data 
+└── subject_summary_fmri-eeg.csv
+    Subject-level summary table for EEG-fmri data 
+
+2 directories, 16 files

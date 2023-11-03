@@ -1,0 +1,4 @@
+"subject","trial_count","arousal_mean","arousal_sd","arousal_session_r","arousal_session_p","arousal_session_ci_h","arousal_session_ci_l"
+1,18,5.44,2.06,0.443,0.066,0.754,-0.03
+2,24,5.96,1.12,-0.436,0.033,-0.039,-0.714
+3,18,5.89,2.63,0.201,0.424,0.611,-0.293

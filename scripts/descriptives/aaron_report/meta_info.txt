@@ -1,0 +1,6 @@
+Number of total subjects: 35
+Subject 9 has NA for arousal response for two trials in runs 3 and 5
+Number of subjects remaining after dropping those with < 40 trials: 30
+
+
+

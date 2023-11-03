@@ -36,7 +36,8 @@ write.csv(d, 'data/behavioral_data/MW_EEG_behavioral_full.csv', row.names=FALSE)
 
 # Summarize missing data
 missing <- apply(d, MARGIN=2, FUN=function(x) sum(is.na(x)))
-missing <- data.frame(variables=names(missing), missing_proportion = missing/nrow(d))
+missing <- data.frame(variables=names(missing), 
+                      missing_proportion = missing/nrow(d))
 missing %>% 
   ggplot(aes(x = reorder(variables, missing_proportion), y = missing_proportion)) + 
   geom_bar(stat='identity') + 
