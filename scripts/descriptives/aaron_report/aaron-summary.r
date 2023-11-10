@@ -7,7 +7,7 @@ group <- 'eeg'
 if (group == 'eeg') {
   path <- "data/behavioral_data/MW_EEG_behavioral_full.csv"
 } else if (group == 'fmri-eeg') {
-  path <- 'scripts/descriptives/fmri-eeg_data/pilot.csv'
+  path <- 'scripts/descriptives/aaron_report/fmri-eeg_data/pilot.csv'
 }
 d <- read.csv(path)
 
@@ -59,7 +59,7 @@ d %>%
         panel.grid = element_blank())
   
   
-path <- paste0('scripts/descriptives/arousal_distribution_', group, '.png')
+path <- paste0('scripts/descriptives/aaron_report/arousal_distribution_', group, '.png')
 ggsave(path, height = 800, width = 800, units='px', dpi = 100) 
 
 
@@ -123,25 +123,39 @@ subs %>%
         axis.ticks = element_blank(),
         legend.position = c(.17, .9))
 
-path <- paste0('scripts/descriptives/session_correlation_', group, '.png')
+path <- paste0('scripts/descriptives/aaron_report/session_correlation_', group, '.png')
 ggsave(path, height = 800, width = 800, units='px', dpi = 100) 
 
-## Histogram of r values ##
+antext <- paste0('Mean: ', round(mean(subs$r), 3), 
+                       '\nSD: ', round(sd(subs$r), 3))
+
+theoretical <- data.frame(x = seq(-1, 1, .001), density = dnorm(seq(-1, 1, .001), .024, .369))
+theoretical$cumsum <- pnorm(theoretical$x, .024, .369)
+theoretical$percentile <- ifelse(theoretical$cumsum > .16 & theoretical$cumsum < .84, 'middle',
+                                 ifelse(theoretical$cumsum <= .16, 'beginning', 'end'))
+green <- brewer_pal(palette='Greens')(9)[3]
+
 subs %>% 
   ggplot(aes(x = r)) + 
+  geom_line(data = theoretical, aes(x = x, y = density * (7/max(density)))) + 
+  geom_ribbon(data = theoretical, aes(ymin = 0, ymax = density * (7/max(density)), x = x, 
+                                      fill = percentile, group=percentile), show.legend = FALSE) + 
   geom_histogram(color = 'black', fill = 'steelblue', alpha = .8, bins = 15) + 
   labs(
     title = 'Distribution of within-session arousal correlations', 
     x = 'Subject-wise correlations (r)',
     y = 'Frequency'
   ) + 
+  annotate('text', x = .8, y = 7, label=antext, hjust=0, size = 6) + 
   xlim(-1, 1) + 
+  scale_fill_manual(values = c('beginning'='white', 'end' = 'white', 'middle' = green)) +
   theme_bw() + 
   theme(axis.ticks = element_blank(),
-        panel.grid = element_blank())
+        panel.grid = element_blank(),
+        text = element_text(size = 25))
 
-path <- paste0('scripts/descriptives/session_correlation_histogram_', group, '.png')
-ggsave(path, height = 800, width = 800, units='px', dpi = 100) 
+path <- paste0('scripts/descriptives/aaron_report/session_correlation_histogram_normal_', group, '.png')
+ggsave(path, height = 12, width = 12, units='in', dpi = 100) 
 
 # Concatenate to summary table
 subject_summary <- subs %>% 
