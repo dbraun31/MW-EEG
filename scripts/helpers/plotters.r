@@ -16,7 +16,7 @@ rotations_to_df <- function(subject_pcas, subject_idxs) {
   for (subject_idx in subject_idxs) {
     rot <- data.frame(subject_pcas[['rotations']][[subject_idx]])
     eigens <- subject_pcas[['eigens']][[subject_idx]]
-    rot <- data.frame(subject = subject_idx, item = item_names_dict[rownames(rot)], rot)
+    rot <- data.frame(case = subject_idx, item = item_names_dict[rownames(rot)], rot)
     d <- rbind(d, rot)
   }
   return(d)
@@ -71,20 +71,21 @@ plot_rotation_subject <- function(subject_pcas, subject_idxs) {
 
 # https://cran.r-project.org/web/packages/ggwordcloud/vignettes/ggwordcloud.html
 
-plot_word_cloud <- function(subject_pcas, subject_idxs, max_size = 30) {
+plot_word_cloud <- function(pcas, idxs, max_size = 30) {
 
-  d <- rotations_to_df(subject_pcas, subject_idxs)
-  eigen_df <- eigens_to_df(subject_pcas, subject_idxs)
+  d <- rotations_to_df(pcas, idxs)
+  eigen_df <- eigens_to_df(pcas, idxs)
   
   d %>% 
-    gather(PC, loading, PC1:(ncol(d))) %>% 
-    inner_join(eigen_df) %>% 
-    mutate(subject = factor(subject, levels = subject_idxs)) %>% 
+    # Take only first three PCs
+    gather(PC, loading, PC1:PC3) %>% 
+    #gather(PC, loading, PC1:(ncol(d))) %>% 
+    mutate(case = factor(case, levels = idxs)) %>% 
     ggplot(aes(label=item, size = abs(loading), color = loading)) +
     geom_text_wordcloud(area_corr = TRUE) +
     scale_size_area(max_size = max_size) +
     scale_color_gradientn(colors = rev(brewer_pal(type='div')(9))) + 
-    facet_grid(subject~PC) + 
+    facet_grid(case~PC) + 
     theme_bw() + 
     theme(strip.background = element_rect(fill=NA))
   }

@@ -4,9 +4,8 @@ source('scripts/helpers/computers.r')
 
 d <- read.csv('data/behavioral_data/MW_EEG_behavioral_full.csv')
 
-# Keep only full cases and only response vars
-d <- d[complete.cases(d), 
-       c('subject', 'run', 
+# Keep only response vars
+d <- d[, c('subject', 'run', 
          grep('*_response$', colnames(d), value=TRUE))]
 
 colnames(d)[3:(ncol(d))] <- drop_suffix(d[,3:(ncol(d))])
