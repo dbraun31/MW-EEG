@@ -4,7 +4,10 @@ library(ggraph)
 source('scripts/helpers/plotters.r')
 source('scripts/helpers/computers.r')
 
-d <- read.csv('data/behavioral_data/MW_EEG_behavioral.csv')
+## SET TRIMMIING CRITERIA
+trimming <- 'forty'
+
+d <- read.csv('data/behavioral/MW_EEG_behavioral.csv')
 
 ## CONTENT OR MOVEMENT ITEMS ##
 # c('rumination', 'content', 'dynamic')
@@ -26,7 +29,6 @@ d <- d[, c('subject', items)]
 d <- d[complete.cases(d),]
 
 ## FILTER 50 TRIALS ONLY OR >= 40 ##
-trimming <- 'fifty'
 if (trimming == 'fifty') {
   filter_criterion <- 50
 } else if (trimming == 'forty') {
@@ -125,13 +127,14 @@ for (group in 1:(Ngroups)) {
 # make subject mapping
 subject_mapping <- data.frame(subject_idx = 1:length(unique(d$subject)), subject_id = unique(d$subject))
 group_pcas <- list()
+out <- data.frame()
 
 for (group in 1:Ngroups) {
-  subject_idxs <- which(clusters==group)
-  subject_ids <- subject_mapping[subject_mapping$subject_idx %in% subject_idxs,]$subject_id
+  subject_ids <- unique(d$subject)[which(clusters==group)]
   data <- d[d$subject %in% subject_ids, !colnames(d) %in% 'subject']
   group_pcas[['rotations']][[paste0('group', group)]] <- prcomp(data)$rotation
   group_pcas[['eigens']][[paste0('group', group)]] <- eigen(cov(data))$values
+  out <- rbind(out, data.frame(subject = unique(d$subject)[which(clusters==group)], cluster = group))
 }
 
 plot_word_cloud(group_pcas, 1:2, max_size = 30)
@@ -139,6 +142,5 @@ plot_word_cloud(group_pcas, 1:2, max_size = 30)
 ggsave(paste0('figures/word_clouds/', trimming, '/groups_', trimming, '.png'), 
        height = 1080, width = 1920/2, units = 'px', dpi = 96)
 
-
-
+write.csv(out, paste0('scripts/dim-reduction/subject-clusters_', trimming, '.csv'), row.names = FALSE)
 

@@ -2,7 +2,7 @@ rm(list=ls())
 library(tidyverse)
 source('scripts/helpers/computers.r')
 
-d <- read.csv('data/behavioral_data/MW_EEG_behavioral_full.csv')
+d <- read.csv('data/behavioral/MW_EEG_behavioral_full.csv')
 
 # Keep only response vars
 d <- d[, c('subject', 'run', 
@@ -20,4 +20,4 @@ d$conf <- 100 - d$conf
 
 
 # Save
-write.csv(d, 'data/behavioral_data/MW_EEG_behavioral.csv', row.names=FALSE)
+write.csv(d, 'data/behavioral/MW_EEG_behavioral.csv', row.names=FALSE)
