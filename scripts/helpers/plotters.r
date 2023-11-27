@@ -89,3 +89,87 @@ plot_word_cloud <- function(pcas, idxs, max_size = 30) {
     theme_bw() + 
     theme(strip.background = element_rect(fill=NA))
   }
+
+### HEAT MAP OF TWO CORRELATION MATRICES
+
+blue <- brewer_pal(type='div')(9)[8]
+orange <- brewer_pal(type='div')(9)[2]
+
+
+plot_cors <- function(cors) {
+  # Takes in a list of correlation matrices
+  # Plots each in a separate facet
+  
+  
+}
+
+
+plot_cors <- function(data, title = NULL) {
+  # Takes in a list of correlation matrices by cluster group
+  # Plots groups as separate facets
+  
+  # If plotting one matrix
+  if(is.matrix(data)) {
+    data <- data.frame(item1 = rownames(data), as.data.frame(data))
+    p <- data %>% 
+      gather(item2, cor, 2:(ncol(.))) %>% 
+      mutate(cor = ifelse(item1 > item2, cor, 0),
+             label = ifelse(item1 >= item2, round(cor, 2), '')) %>% 
+      ggplot(aes(x = item1, y = item2, fill = cor)) + 
+      geom_tile() +
+      geom_text(aes(label=label)) + 
+      scale_fill_gradient2(low=blue, high=orange, mid = 'white') + 
+      labs(
+        x = '',
+        y = '',
+        fill = '',
+        title = title
+      ) + 
+      theme_bw() +
+      theme(axis.ticks = element_blank(),
+            panel.grid.minor = element_blank(),
+            legend.position = c(.25, .9))
+    return(p)
+      
+  }
+  
+  # If plotting multiple groups 
+  if (is.list(data)) {
+    d <- data.frame()
+    
+    for (group in names(cors)) {
+      d <- rbind(d, data.frame(data[[group]], group=group))
+    }
+    
+    p <- d %>% 
+      mutate(item1 = rownames(.)) %>% 
+      gather(item2, cor, aff:self) %>% 
+      mutate(cor = ifelse(item1 < item2, 0, cor),
+             alpha = ifelse(item1 < item2, 0, 1),
+             alpha = ifelse(cor == 1, 0, alpha),
+             cor = ifelse(cor == 1, 0, cor),
+             item1 = gsub('\\d', '', item1),
+             label = ifelse(item1 <= item2, '', round(cor, 2))) %>% 
+      ggplot(aes(x = item1, y = item2, fill = cor)) + 
+      geom_tile(aes(alpha = alpha)) + 
+      geom_text(aes(label=label), size = 5) + 
+      scale_fill_gradient2(low = blue, high = orange, mid = 'white')  + 
+      facet_grid(group~.) + 
+      labs(
+        x = '',
+        y = '',
+        fill = '',
+        title = title
+      ) + 
+      theme_bw() + 
+      theme(axis.ticks = element_blank(),
+            panel.grid.minor = element_blank(),
+            strip.background = element_rect(fill = NA),
+            legend.position = c(.15, .9),
+            text = element_text(size = 18)) + 
+      guides(alpha = 'none')
+    
+    return(p)    
+      
+  }
+}
